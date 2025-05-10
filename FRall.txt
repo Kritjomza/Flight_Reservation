@@ -1,0 +1,152 @@
+CREATE DATABASE IF NOT EXISTS flight_reservation;
+USE flight_reservation;
+
+CREATE TABLE User (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    role ENUM('passenger', 'admin') DEFAULT 'passenger'
+);
+
+CREATE TABLE Passenger (
+    passenger_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT, 
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    citizen_id VARCHAR(13) UNIQUE,
+    passport_id VARCHAR(10) UNIQUE,
+    gender ENUM('M', 'F'),
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE Admin (
+    admin_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNIQUE,
+    full_name VARCHAR(100),
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE Airport (
+    airport_id INT AUTO_INCREMENT PRIMARY KEY,
+    airport_name VARCHAR(50),
+    city VARCHAR(50),
+    country VARCHAR(50)
+);
+
+CREATE TABLE Plane (
+    plane_id VARCHAR(10) PRIMARY KEY,
+    plane_model VARCHAR(50),
+    airline VARCHAR(50),
+    capacity INT DEFAULT 180
+);
+
+CREATE TABLE Flight (
+    flight_id VARCHAR(10) PRIMARY KEY,
+    plane_id VARCHAR(10),
+    airport_departure_id INT,
+    airport_destination_id INT,
+    flight_time TIME,
+    date DATE,
+    price DECIMAL(10,2),
+    flight_type ENUM('domestic', 'international') NOT NULL,
+    FOREIGN KEY (plane_id) REFERENCES Plane(plane_id),
+    FOREIGN KEY (airport_departure_id) REFERENCES Airport(airport_id),
+    FOREIGN KEY (airport_destination_id) REFERENCES Airport(airport_id)
+);
+
+CREATE TABLE Booking (
+    booking_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE Ticket (
+    ticket_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT,
+    passenger_id INT,
+    flight_id VARCHAR(10),
+    seat_no VARCHAR(5),
+    status ENUM('booked', 'checked-in', 'cancelled') DEFAULT 'booked',
+    FOREIGN KEY (booking_id) REFERENCES Booking(booking_id),
+    FOREIGN KEY (passenger_id) REFERENCES Passenger(passenger_id),
+    FOREIGN KEY (flight_id) REFERENCES Flight(flight_id) ON DELETE CASCADE
+);
+
+CREATE TABLE Payment (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT,
+    amount DECIMAL(10,2),
+    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('pending', 'paid', 'failed') DEFAULT 'pending',
+    FOREIGN KEY (booking_id) REFERENCES Booking(booking_id)
+);
+
+-- ใช้ password ที่เข้ารหัสเหมือนกัน
+-- $2y$10$eCSX3rbe22y0pdQ80aaVcufGLE0HKuDdvIDuxwOFyGG3DlKBdMGvO
+
+INSERT INTO User (username, password, email, role) VALUES
+('john', '$2y$10$eCSX3rbe22y0pdQ80aaVcufGLE0HKuDdvIDuxwOFyGG3DlKBdMGvO', 'john@example.com', 'passenger'),
+('admin', '$2y$10$eCSX3rbe22y0pdQ80aaVcufGLE0HKuDdvIDuxwOFyGG3DlKBdMGvO', 'admin@example.com', 'admin'), 
+('alice', '$2y$10$eCSX3rbe22y0pdQ80aaVcufGLE0HKuDdvIDuxwOFyGG3DlKBdMGvO', 'alice@example.com', 'passenger');
+
+INSERT INTO Passenger (user_id, first_name, last_name, citizen_id, passport_id, gender) VALUES
+(1, 'John', 'Doe', '1234567890123', 'A12345678', 'M'),
+(3, 'Alice', 'Williams', '9876543210123', 'B98765432', 'F');
+
+INSERT INTO Admin (user_id, full_name) VALUES
+(2, 'System Administrator');
+
+INSERT INTO Airport (airport_name, city, country) VALUES
+('Changi Airport', 'Singapore', 'Singapore'),
+('Narita International Airport', 'Tokyo', 'Japan'),
+('Incheon International Airport', 'Seoul', 'South Korea'),
+('Sydney Kingsford Smith Airport', 'Sydney', 'Australia'),
+('Charles de Gaulle Airport', 'Paris', 'France'),
+('Frankfurt Airport', 'Frankfurt', 'Germany'),
+('John F. Kennedy International Airport', 'New York', 'USA'),
+('Dubai International Airport', 'Dubai', 'UAE'),
+('Beijing Capital International Airport', 'Beijing', 'China'),
+('Hong Kong International Airport', 'Hong Kong', 'Hong Kong');
+
+INSERT INTO Airport (airport_name, city, country) VALUES
+('Suvarnabhumi Airport', 'Bangkok', 'Thailand'),
+('Don Mueang International Airport', 'Bangkok', 'Thailand'),
+('Chiang Mai International Airport', 'Chiang Mai', 'Thailand'),
+('Phuket International Airport', 'Phuket', 'Thailand'),
+('Hat Yai International Airport', 'Hat Yai', 'Thailand'),
+('Udon Thani International Airport', 'Udon Thani', 'Thailand'),
+('Khon Kaen Airport', 'Khon Kaen', 'Thailand'),
+('Ubon Ratchathani Airport', 'Ubon Ratchathani', 'Thailand'),
+('Samui Airport', 'Koh Samui', 'Thailand'),
+('Nakhon Si Thammarat Airport', 'Nakhon Si Thammarat', 'Thailand'),
+('Krabi International Airport', 'Krabi', 'Thailand'),
+('Trat Airport', 'Trat', 'Thailand');
+
+
+INSERT INTO Plane (plane_id, plane_model, airline) VALUES
+('SQ777', 'Airbus A350', 'Singapore Airlines'),
+('CX888', 'Boeing 777-300ER', 'Cathay Pacific'),
+('JL505', 'Boeing 787 Dreamliner', 'Japan Airlines'),
+('EK321', 'Airbus A380', 'Emirates'),
+('QF23',  'Boeing 737-800', 'Qantas'),
+('LH789', 'Airbus A340', 'Lufthansa'),
+('AF112', 'Airbus A330', 'Air France'),
+('VN345', 'Airbus A321', 'Vietnam Airlines'),
+('MH101', 'Boeing 737 MAX', 'Malaysia Airlines'),
+('BR100', 'Boeing 777', 'EVA Air');
+
+INSERT INTO Plane (plane_id, plane_model, airline) VALUES
+('FD301', 'Airbus A320', 'Thai AirAsia'),
+('DD202', 'Boeing 737-800', 'Nok Air'),
+('WE101', 'Airbus A320', 'Thai Smile'),
+('PG209', 'ATR 72-600', 'Bangkok Airways'),
+('SL555', 'Airbus A320', 'Thai Lion Air'),
+('DD305', 'Boeing 737 MAX', 'Nok Air'),
+('FD999', 'Airbus A321neo', 'Thai AirAsia'),
+('PG450', 'ATR 72-600', 'Bangkok Airways'),
+('SL700', 'Airbus A330-300', 'Thai Lion Air'),
+('WE999', 'Airbus A320neo', 'Thai Smile');
+
