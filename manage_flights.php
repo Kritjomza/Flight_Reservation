@@ -6,10 +6,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-// 🔍 Search filter
+// Search filter
 $search = $_GET['search'] ?? '';
 
-// ✏️ Edit
+// Edit
 $editing = false;
 $edit_flight = null;
 if (isset($_GET['edit'])) {
@@ -18,7 +18,7 @@ if (isset($_GET['edit'])) {
     $edit_flight = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM Flight WHERE flight_id = '$edit_id'"));
 }
 
-// 🗑️ Delete
+// Delete
 if (isset($_GET['delete'])) {
     $flight_id = $_GET['delete'];
     mysqli_query($conn, "DELETE FROM Flight WHERE flight_id = '$flight_id'");
@@ -26,7 +26,7 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-// ✅ Submit Add/Edit
+// Submit Add/Edit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $flight_id = $_POST['flight_id'];
     $plane_id = $_POST['plane_id'];
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-// ✈️ Query flights with seat availability
+// Query flights with seat availability
 $query = "
     SELECT f.*, 
            p.plane_model, p.capacity,

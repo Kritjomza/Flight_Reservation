@@ -1,12 +1,12 @@
 <?php
-$timeout = 900; // 15 นาที
-if (isset($_SESSION['LAST_ACTIVITY']) && time() - $_SESSION['LAST_ACTIVITY'] > $timeout) {
-    session_unset();
-    session_destroy();
-    header("Location: login.php?timeout=1");
-    exit();
-}
-$_SESSION['LAST_ACTIVITY'] = time();
+// $timeout = 900; // 15 นาที
+// if (isset($_SESSION['LAST_ACTIVITY']) && time() - $_SESSION['LAST_ACTIVITY'] > $timeout) {
+//     session_unset();
+//     session_destroy();
+//     header("Location: login.php?timeout=1");
+//     exit();
+// }
+// $_SESSION['LAST_ACTIVITY'] = time();
 ?>
 
 <nav class="fixed top-0 left-0 w-full bg-white/90 backdrop-blur-md shadow-md z-50 border-b border-gray-200">
