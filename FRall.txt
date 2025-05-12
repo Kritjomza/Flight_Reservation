@@ -150,3 +150,9 @@ INSERT INTO Plane (plane_id, plane_model, airline) VALUES
 ('SL700', 'Airbus A330-300', 'Thai Lion Air'),
 ('WE999', 'Airbus A320neo', 'Thai Smile');
 
+
+-- ส่วน index เพื่อให้เร็วขึ้นสำหรับจุดที่ต้องเรียกใช้บ่อยๆ
+CREATE INDEX idx_passenger_user_id ON Passenger(user_id);
+CREATE INDEX idx_booking_user_id ON Booking(user_id);
+CREATE INDEX idx_booking_flight_id ON Booking(flight_id);
+
